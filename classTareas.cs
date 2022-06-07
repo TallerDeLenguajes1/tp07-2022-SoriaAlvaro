@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace TareasClase
 {
-    class Tareas{
+    public class Tareas{
         private int tareaID;
         private string descripcion;
         private int duracion;
