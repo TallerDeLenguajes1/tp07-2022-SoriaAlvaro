@@ -1,132 +1,112 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using TareasClase;
 using EmpleadosClase;
 namespace tareasDeEmpleados{
     class Program{
-       /*  static string IngresarDescrip(){
-            Console.WriteLine("Ingrese una descripción");
-            string descrip = Console.ReadLine();
-            return descrip;
-        }
-        static int IngresarDuracion(){
-            Console.WriteLine("Ingrese una duración de la tarea");
-            int duracion = Convert.ToInt32(Console.ReadLine());
-            return duracion;
-        }
-
-        static bool PreguntarTarea(){
-            System.Console.WriteLine("Terminó la tarea?\n1)Y\n2)N");
-            char op = Convert.ToChar(Console.ReadLine());
-            return (op == 'y' || op == 'Y')?true
-            :(op == 'n' || op == 'N')?false:false;
-        }
-
-        static void Mostar(List<Tareas> tar){
-            foreach(Tareas tarea in tar){
-                Console.WriteLine($"Tarea {tarea.TareaID}");
-                Console.WriteLine($"Descripción {tarea.Descripcion}");
-                Console.WriteLine($"Duración {tarea.Duracion}");
-            }
-        }
-
-        static void AgregarTarea(List<Tareas> tar){
-            System.Console.WriteLine("Ingrese una cantidad para registrar");
-            int cant2 = Convert.ToInt32(Console.ReadLine());
-            int cantTareas = tar.Count;
-            for(int i =cantTareas; i < cant2+cantTareas; i++){
-                tar.Add(new Tareas());
-                tar[i].TareaID = i+1;
-                tar[i].Descripcion = IngresarDescrip();
-                tar[i].Duracion = IngresarDuracion();
-                Console.Clear();
-            }
-        } */
-
         static bool Preguntar(){
-            System.Console.WriteLine("Terminó la tarea?\nY SI\nCualquier otra tecla NO");
-            char op = Convert.ToChar(Console.ReadLine());
-            if(op == 'y' || op == 'Y'){
-                return true;
-            }
+            Console.WriteLine("Terminó la tarea?\ny/Y para CONFIRMAR.");
+            Console.WriteLine("");
+            char opConfirm = Convert.ToChar(value: Console.ReadLine());
+            Console.ReadKey();
+            do{
+                if(!((opConfirm == 'y' || opConfirm == 'Y') || (opConfirm == 'n' || opConfirm == 'N'))){
+                    Console.WriteLine("Ingrese una Opción correcta");
+                }
+                else{
+                    if(opConfirm == 'y' || opConfirm == 'Y'){
+                        return true;
+                    }else if(opConfirm == 'n' || opConfirm == 'N'){
+                        return false;
+                    }
+                }
+            }while(!((opConfirm == 'y' || opConfirm == 'Y') || (opConfirm == 'n' || opConfirm == 'N')));
             return false;
         }
-        static void Main(){
-
-            /* ConsoleKeyInfo cki;
-            List<Tareas> tareas = new List<Tareas>();
-            List<Tareas> tareasR = new List<Tareas>();
-                System.Console.WriteLine("Ingrese una cantidad para registrar");
-                int cant = Convert.ToInt32(Console.ReadLine());
-                for(var i = 0; i < cant; i++){
-                    tareas.Add(new Tareas());
-                    tareas[i].TareaID = i+1;
-                    tareas[i].Descripcion = IngresarDescrip();
-                    tareas[i].Duracion = IngresarDuracion();
-                    Console.Clear();
+        static void Main(string[] args){
+            //Lista de Empleados
+            List<Empleados>listasDeEmpleados= new List<Empleados>();
+            Random rand = new Random();
+            int rEmpleado = rand.Next(1,3);
+            int cantTar = 0;
+            Console.WriteLine($"Total de empleados = {rEmpleado}");
+            for(int i = 0; i < rEmpleado; i++){
+                listasDeEmpleados.Add(new Empleados(i));
+                Console.WriteLine($"Empleado: {listasDeEmpleados[i].EmpId}");
+                Console.WriteLine($"Tareas del empleado: {listasDeEmpleados[i].CanTareasEmp}");
+                cantTar = listasDeEmpleados[i].CanTareasEmp;
+                listasDeEmpleados[i].TareasDelEmpleado = new List<Tareas>();//lista de tareas del empleado
+                listasDeEmpleados[i].TareasDelEmpleadoRealizadas = new List<Tareas>();
+                for(int j = 0; j < cantTar; j++){
+                    listasDeEmpleados[i].TareasDelEmpleado.Add(new Tareas());
+                    listasDeEmpleados[i].TareasDelEmpleado[j].TareaID = j+1;
+                    System.Console.WriteLine($"Descripción de tarea {listasDeEmpleados[i].TareasDelEmpleado[j].TareaID}:");
+                    listasDeEmpleados[i].TareasDelEmpleado[j].Descripcion = Console.ReadLine();
+                    System.Console.WriteLine("Duración: ");
+                    listasDeEmpleados[i].TareasDelEmpleado[j].Duracion = Convert.ToInt32(Console.ReadLine());
+                    System.Console.WriteLine("");
                 }
-                System.Console.WriteLine($"num tareas {tareas.Count}");
-            do{
-                System.Console.WriteLine("1)Mostrar Tareas Pendientes\n2)Mover a tareas Realizadas\n3)Mostrar Tareas Realizadas\n4)Agregar Tareas");
-                int op = Convert.ToInt32(Console.ReadLine());
+                System.Console.WriteLine("\n===\t===\t===\t===\t===\t===\t===\t===\t===\t\n");
                 Console.Clear();
-                if(op == 1){Mostar(tareas);}
-                else if(op == 2){
-                    for(int i = 0; i < tareas.Count; i++){
-                        System.Console.WriteLine($"Tarea {tareas[i].TareaID}");
-                        if(PreguntarTarea()){
-                            tareasR.Add(tareas[i]);
-                            tareas.RemoveAt(i);
+            }
+
+            ConsoleKeyInfo cki;
+            do{
+                Console.WriteLine("1)Mostrar Tareas\n2)Mover Tareas\n3)Mostrar Realizadas");
+                int op = Convert.ToInt32(Console.ReadLine());
+                if(op == 1){
+                    foreach(Empleados emp in listasDeEmpleados){
+                        Console.WriteLine("");
+                        Console.WriteLine($"Tareas pendientes del Empleado {emp.EmpId}");
+                        Console.WriteLine($"Cantidad de tareas= {emp.CanTareasEmp}");
+                        Console.WriteLine("");
+                        foreach(Tareas tar in emp.TareasDelEmpleado){
+                            Console.WriteLine($"Tarea {tar.TareaID}");
+                            Console.WriteLine($"Descripción: {tar.Descripcion}");
+                            Console.WriteLine($"Duración: {tar.Duracion}");
+                            Console.WriteLine("");
+                        }
+                        Console.WriteLine("\n===\t===\t===\t===\t===\t===\t===\t===\t===\t\n");
+                    }
+                }
+                if(op == 2){
+                    for(int i = 0; i < rEmpleado; i++){
+                        Console.WriteLine($"Empleado: {listasDeEmpleados[i].EmpId}");
+                        Console.WriteLine($"Tareas del empleado: {listasDeEmpleados[i].CanTareasEmp}");
+                        cantTar = listasDeEmpleados[i].CanTareasEmp;
+                        for(int j = 0; j < cantTar; j++){
+                             /* Console.WriteLine($"Tarea {listasDeEmpleados[i].TareasDelEmpleado[j].TareaID}:"); */
+                            if(Preguntar()){
+                                listasDeEmpleados[i].TareasDelEmpleadoRealizadas.Add(listasDeEmpleados[i].TareasDelEmpleado[j]);
+                                listasDeEmpleados[i].CanTareasEmp -= 1;
+                                if(listasDeEmpleados[i].CanTareasEmp < 0){listasDeEmpleados[i].CanTareasEmp = 0;}
+                                listasDeEmpleados[i].TareasDelEmpleado.RemoveAt(j);
+                            }
+                            else{continue;}
                         }
                     }
                 }
-                else if(op == 3){Mostar(tareasR);}
-                else if(op == 4){AgregarTarea(tareas);}
-                else{System.Console.WriteLine("Ingrese una opción correcta");}
-                System.Console.WriteLine("Presione ENTER para continuar");
+                if(op == 3){
+                    foreach(Empleados emp in listasDeEmpleados){
+                        Console.WriteLine("");
+                        Console.WriteLine($"Tareas pendientes del Empleado {emp.EmpId}");
+                        Console.WriteLine($"Cantidad de tareas= {emp.CanTareasEmp}");
+                        Console.WriteLine("");
+                        foreach(Tareas tar in emp.TareasDelEmpleadoRealizadas){
+                            Console.WriteLine($"Tarea {tar.TareaID}");
+                            Console.WriteLine($"Descripción: {tar.Descripcion}");
+                            Console.WriteLine($"Duración: {tar.Duracion}");
+                            Console.WriteLine("");
+                        }
+                        Console.WriteLine("\n===\t===\t===\t===\t===\t===\t===\t===\t===\t\n");
+                    }
+                }
                 cki = Console.ReadKey();
                 Console.Clear();
-            }while(cki.Key != ConsoleKey.Escape); */
-
-            /* Empleados newEmpleado = new Empleados();
-            int cantTareas = 2;
-            newEmpleado.AddData(cantTareas); */
-            ConsoleKeyInfo cki;
-            List<Empleados> tareasDeEmpleados = new List<Empleados>();
-            tareasDeEmpleados.Add(new Empleados(0));
-            tareasDeEmpleados[0].AddData();
-            for(int i = 0; i < tareasDeEmpleados.Count; i++){
-                System.Console.WriteLine($"Empleado {tareasDeEmpleados[0].EmpId}");
-                System.Console.WriteLine($"Tareas del Empleado {tareasDeEmpleados[0].TareasEmpleado}");
-                do{
-                    System.Console.WriteLine("1)Mostrar Tareas Pendientes\n2)Mover Tareas\n3)Mostrar Tareas Realizadas");
-                    int op = Convert.ToInt32(Console.ReadLine());
-                    if(op == 1){
-                        foreach(Tareas tar in tareasDeEmpleados[0].TareasPend){
-                            System.Console.WriteLine($"Tarea {tar.TareaID}");
-                            Console.WriteLine($"Descripción: {tar.Descripcion}");
-                            Console.WriteLine($"Duración: {tar.Duracion}");
-                        }
-                    }
-                    else if(op == 2){
-                        for(int j = 0;j < tareasDeEmpleados[0].TareasPend.Count; j++){
-                            if(Preguntar()){
-                                tareasDeEmpleados[0].TareasRealz.Add(tareasDeEmpleados[0].TareasPend[j]);
-                                tareasDeEmpleados[0].TareasPend.RemoveAt(j);
-                            }
-                        }
-                    }
-                    if(op == 3){
-                        foreach(Tareas tar in tareasDeEmpleados[0].TareasRealz){
-                            System.Console.WriteLine($"Tarea {tar.TareaID}");
-                            Console.WriteLine($"Descripción: {tar.Descripcion}");
-                            Console.WriteLine($"Duración: {tar.Duracion}");
-                        }
-                    }
-                    cki = Console.ReadKey();
-                    Console.Clear();
-                }while(cki.Key != ConsoleKey.Escape);
-            }
+            }while(cki.Key != ConsoleKey.Escape);
             Console.ReadKey();
         }
     }
